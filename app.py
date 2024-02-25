@@ -1,22 +1,24 @@
 import streamlit as st
 import cv2
 import numpy as np
-from datetime import datetime
 import os
-
-from dbUtils import insert_image_metadata, init_db
+from datetime import datetime
 from components import details_form, capture_form
+from models import ImageMetadataDAO
+
+# Instantiate the DAO for database operations
+metadata_dao = ImageMetadataDAO()
 
 def save_image(cv2_img, base_path='./img'):
     """
     Save the OpenCV image to a file.
 
-    Args:
-        cv2_img (numpy.ndarray): The OpenCV image.
-        base_path (str, optional): The base path to save the image. Defaults to './img'.
+    Parameters:
+    - cv2_img: The OpenCV image to be saved.
+    - base_path: The base path where the image will be saved. Default is './img'.
 
     Returns:
-        str: The path to the saved image.
+    - save_path: The path where the image is saved.
     """
     if not os.path.exists(base_path):
         os.makedirs(base_path)
@@ -30,60 +32,64 @@ def submit_details_cb():
     """
     Callback function for submitting image details.
 
-    This function retrieves the title and description from the session state,
-    inserts the image metadata into the database, and resets the session state.
+    It retrieves the title and description from the session state and adds the image metadata to the database.
+    If successful, it displays a success message, resets the session state, and reruns the app.
+    Otherwise, it displays an error message.
     """
     title = st.session_state.get('title', '')
     description = st.session_state.get('description', '')
-    if 'image_path' in st.session_state:
-        # Insert the image metadata into the database
-        try:
-            insert_image_metadata(title, description, st.session_state['image_path'])
+    if 'image_path' in st.session_state and title and description:
+        metadata = metadata_dao.add_image_metadata(title, description, st.session_state['image_path'])
+        if metadata:
             st.success(f"Image metadata for '{title}' added successfully.")
-        except Exception as e:
-            st.error(f"Error inserting image metadata: {e}")
-
-        # Reset the session state
-        st.session_state.page = 'capture'
-        st.session_state['title'] = ''
-        st.session_state['description'] = ''
-        st.rerun() #neded to ensure the session state is reset
+            st.session_state.page = 'capture'
+            st.session_state['title'] = ''
+            st.session_state['description'] = ''
+            st.rerun()
+        else:
+            st.error('Failed to add image metadata.')
 
 def save_image_cb(img_file_buffer):
     """
     Callback function for saving the captured image.
 
-    This function decodes the image file buffer, saves the image, and updates the session state.
-    
-    Args:
-        img_file_buffer (BytesIO): The image file buffer.
+    It decodes the image file buffer, saves the image, and updates the session state with the image path.
+    If successful, it switches the app page to 'details' and reruns the app.
+    Otherwise, it displays an error message.
     """
     bytes_data = img_file_buffer.getvalue()
+    cv2_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
     
-    try:
-        cv2_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
-    except Exception as e:
-        st.error(f"Error decoding image: {e}")
-    try:
-        save_path = save_image(cv2_img)
-    except Exception as e:
-        st.error(f"Error saving image: {e}")
-
-    # Update the session state
-    st.session_state['image_path'] = save_path
-    st.session_state.page = 'details'
-    st.rerun()
+    save_path = save_image(cv2_img)
+    if save_path:
+        st.session_state['image_path'] = save_path
+        st.session_state.page = 'details'
+        st.rerun()
+    else:
+        st.error('Failed to save the image.')
 
 def main():
+    """
+    Main function of the app.
+
+    It sets up the app title and session state variables.
+    Depending on the current app page, it displays the capture form or the details form.
+    """
+    st.title("Image Capture and Metadata App")
+    
     if 'page' not in st.session_state:
         st.session_state['page'] = 'capture'
+    if 'title' not in st.session_state:
+        st.session_state['title'] = ''
+    if 'description' not in st.session_state:
+        st.session_state['description'] = ''
+    
     if st.session_state.page == 'capture':
         capture_form(save_image_cb)
     elif st.session_state.page == 'details':
         if 'image_path' in st.session_state:
-            st.image(st.session_state['image_path'], caption="Captured Image", width=200)
+            st.image(st.session_state['image_path'], caption="Captured Image", width=300) #display the captured image and resize to fit
         details_form(submit_details_cb)
 
 if __name__ == "__main__":
-    init_db()
     main()
