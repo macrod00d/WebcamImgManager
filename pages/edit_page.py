@@ -12,7 +12,8 @@ dao = ImageMetadataDAO()
 images_metadata = dao.get_all_image_metadata()
 
 # Set a title for the Streamlit app
-st.title('Image Grid Display')
+st.title('Browse Captured Images')
+st.caption('Click the "Edit" button to modify the metadata for each image.')
 
 # Calculate the number of rows needed for the grid
 num_images = len(images_metadata)

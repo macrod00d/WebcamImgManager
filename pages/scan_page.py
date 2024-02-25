@@ -77,7 +77,9 @@ def main():
     It sets up the app title and session state variables.
     Depending on the current app page, it displays the capture form or the details form.
     """
-    st.title("Image Capture and Metadata App")
+    st.title("Webcam Picture Capture")
+    st.subheader("Capture an image and add metadata")
+    st.caption("Please click the take photo button to capture an image and press save to proceed to labelling. You will then be prompted to input data and save the image to the db.\n\n Note you may have to allow the browser access to the camera before the video will appear.")
 
     st.sidebar.page_link("pages/scan_page.py", label="Scan", icon="📸")
     st.sidebar.page_link("pages/edit_page.py", label="Edit", icon="📝")
@@ -95,7 +97,7 @@ def main():
         capture_form(save_image_cb)
     elif st.session_state.page == 'details':
         if 'image_path' in st.session_state:
-            st.image(st.session_state['image_path'], caption="Captured Image", width=300) #display the captured image and resize to fit
+            st.image(st.session_state['image_path'], caption="Captured Image", width=175) #display the captured image and resize to fit
         details_form(submit_details_cb)
 
 if __name__ == "__main__":
