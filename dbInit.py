@@ -16,10 +16,11 @@ class ImageMetadataModel(Base):
     description = Column(String, nullable=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
     filepath = Column(String, nullable=False)
+    tags = Column(String, nullable=True)
 
     def __repr__(self):
         return (f"<ImageMetadata(title='{self.title}', description='{self.description}', "
-                f"timestamp={self.timestamp}, filepath='{self.filepath}')>")
+                f"timestamp={self.timestamp}, filepath='{self.filepath}', tags='{self.tags}')>")
 
 # Create the SQLite database and tables
 engine = create_engine('sqlite:///image_metadata.db', echo=False)
