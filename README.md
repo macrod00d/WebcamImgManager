@@ -4,6 +4,17 @@
 This is a simple webcam image capture application which implements a web UI to capture an image from a user's local machine.
 Once the image has been captured, the user is prompted to input some metadata which then gets stored in an sqlite db
 
+## Features
+* Welcome page with documentation
+* Scan page
+    * Shows a live view of the default camera connected to the local machine
+    * Allows the user to take a picture
+    * Prompts user for a title and description
+    * Saves metadata to sqlite db, and image to local folder
+* Edit page
+    * Shows all saved images
+    * Provides an edit feature to edit the title or description, or delete the image
+
 ## How to Run 
 Ensure you have python 3.10 other versions are not tested. Conda is reccomended as python version can be easily specified
 
@@ -32,6 +43,9 @@ python dbinit.py
 ```
 streamlit run app.py
 ```
+
+### Cleanup
+An img_cleanup.py script has been provided which will delete any images which do not exist in the db in case any extra images are generated during testing. 
 
 ## Goals
 * Application implements OOP principles using a class for images
