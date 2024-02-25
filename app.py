@@ -5,17 +5,17 @@ from datetime import datetime
 import os
 
 from sqlalchemy import Column, Integer, String, DateTime, create_engine
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.dialects.sqlite import JSON
-from sqlalchemy.orm import sessionmaker
 
-
+engine = create_engine('sqlite:///image_metadata.db', echo=False)
+Session = sessionmaker(bind=engine)
+Base = declarative_base()
 
 from typing import List
 def insert_image_metadata(title: str, description: List[str], filepath: str) -> None:
     # Create a new session
-    engine = create_engine('sqlite:///image_metadata.db', echo=False)
-    Session = sessionmaker(bind=engine)
+
     session = Session()
     try:
         # Create a new ImageMetadataModel instance with the provided data
@@ -38,8 +38,6 @@ def insert_image_metadata(title: str, description: List[str], filepath: str) -> 
     finally:
         # Close the session
         session.close()
-
-Base = declarative_base()
 
 class ImageMetadataModel(Base):
     __tablename__ = 'image_metadata'
