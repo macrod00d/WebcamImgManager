@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.sidebar.page_link("pages/app.py", label="Scan", icon="📸")
+st.sidebar.page_link("pages/scan_page.py", label="Scan", icon="📸")
 st.sidebar.page_link("pages/edit_page.py", label="Edit", icon="📝")
 
 st.markdown(body="""
