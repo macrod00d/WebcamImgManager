@@ -7,19 +7,30 @@ Once the image has been captured, the user is prompted to input some metadata wh
 ## How to Run 
 Ensure you have python 3.10 other versions are not tested. Conda is reccomended as python version can be easily specified
 
-First create a virtual environment:
-### Using Venv:
+### First create a virtual environment:
+You can use either venv or anaconda, anaconda is reccomended. Do not use both, pick one. 
+#### Using Venv:
 ```
 python3 -m venv .webcamimg
 .webcamimg\Scripts\activate.bat
 pip install -r requirements.txt
 ```
 
-### Using Anaconda (reccomended):
+#### Using Anaconda (reccomended):
 ```
 conda create -n webcamimg python=3.10
 conda activate webcamimg
 pip install -r requirements.txt
+```
+
+### Next initialize the sqlite db
+```
+python dbinit.py
+```
+
+### Finally run the application, it should auto launch the browser to the UI
+```
+streamlit run app.py
 ```
 
 ## Goals
