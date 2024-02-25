@@ -60,3 +60,45 @@ class ImageMetadataDAO:
             session.add(new_image_metadata)
             session.commit()
             return new_image_metadata
+
+    def get_all_image_metadata(self):
+        """
+        Fetches all image metadata from the database.
+
+        Returns:
+            List[ImageMetadataModel]: A list of all image metadata.
+        """
+        with SessionLocal() as session:
+            return session.query(ImageMetadataModel).all()
+
+    def update_image_metadata(self, id: int, title: str, description: str):
+        """
+        Updates image metadata in the database.
+
+        Args:
+            id (int): The ID of the image metadata to update.
+            title (str): The new title of the image.
+            description (str): The new description of the image.
+
+        Returns:
+            ImageMetadataModel: The updated image metadata.
+        """
+        with SessionLocal() as session:
+            image_metadata = session.query(ImageMetadataModel).filter(ImageMetadataModel.id == id).one()
+            image_metadata.title = title
+            image_metadata.description = description
+            session.commit()
+            return image_metadata
+
+    def get_image_metadata(self, id: int):
+        """
+        Fetches a single image metadata entry from the database by its ID.
+
+        Args:
+            id (int): The ID of the image metadata to fetch.
+
+        Returns:
+            ImageMetadataModel: The requested image metadata.
+        """
+        with SessionLocal() as session:
+            return session.query(ImageMetadataModel).filter(ImageMetadataModel.id == id).one()

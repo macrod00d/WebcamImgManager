@@ -76,6 +76,9 @@ def main():
     Depending on the current app page, it displays the capture form or the details form.
     """
     st.title("Image Capture and Metadata App")
+
+    st.sidebar.page_link("pages/app.py", label="Scan", icon="📸")
+    st.sidebar.page_link("pages/edit_page.py", label="Edit", icon="📝")
     
     if 'page' not in st.session_state:
         st.session_state['page'] = 'capture'
