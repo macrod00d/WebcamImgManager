@@ -102,3 +102,15 @@ class ImageMetadataDAO:
         """
         with SessionLocal() as session:
             return session.query(ImageMetadataModel).filter(ImageMetadataModel.id == id).one()
+
+    def delete_image_metadata(self, id: int):
+        """
+        Deletes image metadata from the database.
+
+        Args:
+            id (int): The ID of the image metadata to delete.
+        """
+        with SessionLocal() as session:
+            image_metadata = session.query(ImageMetadataModel).filter(ImageMetadataModel.id == id).one()
+            session.delete(image_metadata)
+            session.commit()

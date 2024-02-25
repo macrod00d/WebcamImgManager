@@ -33,7 +33,7 @@ edit_modal = Modal(
 # Function to display the edit form within the modal
 def display_edit_form(image_id):
     """
-    Display the edit form in a modal for a specific image.
+    Display the edit form for a specific image.
 
     Parameters:
     image_id (int): The ID of the image to edit.
@@ -51,19 +51,26 @@ def display_edit_form(image_id):
             new_title = st.text_input("Title", value=image_metadata.title, key=f"title-{image_id}")
             new_description = st.text_area("Description", value=image_metadata.description or "", key=f"desc-{image_id}")
 
+            # Create columns for Submit and Delete buttons
+            col1, col2 = st.columns(2)
+            
             # Submit button for the form
-            submit_changes = st.button("Submit Changes", key=f"submit-{image_id}")
+            submit_changes = col1.button("Submit Changes", key=f"submit-{image_id}")
+            
+            # Delete button for the form
+            delete_image = col2.button("Delete Image", key=f"delete-{image_id}")
 
             # If the submit button is pressed, update the database and close the modal
             if submit_changes:
-                try:
-                    dao.update_image_metadata(image_id, new_title, new_description)
-                    st.success("Changes saved successfully!")
-                    edit_modal.close()
-                    st.experimental_rerun()
-                except Exception as e:
-                    st.error(f"Error occurred while saving changes: {str(e)}")
+                dao.update_image_metadata(image_id, new_title, new_description)
                 st.success("Changes saved successfully!")
+                edit_modal.close()
+                st.experimental_rerun()
+            
+            # If the delete button is pressed, delete the image metadata and close the modal
+            if delete_image:
+                dao.delete_image_metadata(image_id)
+                st.success("Image deleted successfully!")
                 edit_modal.close()
                 st.experimental_rerun()
 
