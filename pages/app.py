@@ -32,19 +32,21 @@ def submit_details_cb():
     """
     Callback function for submitting image details.
 
-    It retrieves the title and description from the session state and adds the image metadata to the database.
+    It retrieves the title, description, and tags from the session state and adds the image metadata to the database.
     If successful, it displays a success message, resets the session state, and reruns the app.
     Otherwise, it displays an error message.
     """
     title = st.session_state.get('title', '')
     description = st.session_state.get('description', '')
+    tags = st.session_state.get('tags', '')
     if 'image_path' in st.session_state and title and description:
-        metadata = metadata_dao.add_image_metadata(title, description, st.session_state['image_path'])
+        metadata = metadata_dao.add_image_metadata(title, description, st.session_state['image_path'], tags)
         if metadata:
             st.success(f"Image metadata for '{title}' added successfully.")
             st.session_state.page = 'capture'
             st.session_state['title'] = ''
             st.session_state['description'] = ''
+            st.session_state['tags'] = ''
             st.rerun()
         else:
             st.error('Failed to add image metadata.')
@@ -86,6 +88,8 @@ def main():
         st.session_state['title'] = ''
     if 'description' not in st.session_state:
         st.session_state['description'] = ''
+    if 'tags' not in st.session_state:
+        st.session_state['tags'] = ''
     
     if st.session_state.page == 'capture':
         capture_form(save_image_cb)

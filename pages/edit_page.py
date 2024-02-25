@@ -1,7 +1,7 @@
 import streamlit as st
 from models import ImageMetadataDAO, ImageMetadataModel
 from streamlit_modal import Modal
-
+from streamlit_tags import st_tags
 st.sidebar.page_link("pages/app.py", label="Scan", icon="📸")
 st.sidebar.page_link("pages/edit_page.py", label="Edit", icon="📝")
 
@@ -50,7 +50,14 @@ def display_edit_form(image_id):
             st.image(image_metadata.filepath, use_column_width=True)
             new_title = st.text_input("Title", value=image_metadata.title, key=f"title-{image_id}")
             new_description = st.text_area("Description", value=image_metadata.description or "", key=f"desc-{image_id}")
-
+            tags = st_tags(
+                label='## Enter tags:',
+                text='You can type another tag, enter to save',
+                value=image_metadata.tags.split(', '),
+                suggestions=['Webcam','Selfie'],
+                maxtags = -1,
+                key=f"tags-{image_id}"
+            )
             # Create columns for Submit and Delete buttons
             col1, col2 = st.columns(2)
             
@@ -62,7 +69,7 @@ def display_edit_form(image_id):
 
             # If the submit button is pressed, update the database and close the modal
             if submit_changes:
-                dao.update_image_metadata(image_id, new_title, new_description)
+                dao.update_image_metadata(image_id, new_title, new_description, tags)
                 st.success("Changes saved successfully!")
                 edit_modal.close()
                 st.experimental_rerun()

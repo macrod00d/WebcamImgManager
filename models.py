@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 from pydantic import BaseModel
 from datetime import datetime
-
+from typing import List
 Base = declarative_base()
 SessionLocal = sessionmaker()
 
@@ -17,6 +17,7 @@ class ImageMetadataModel(Base):
     description = Column(String, nullable=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
     filepath = Column(String, nullable=False)
+    tags = Column(String, nullable=True)
 
 class ImageMetadata(BaseModel):
     """
@@ -26,6 +27,7 @@ class ImageMetadata(BaseModel):
     description: str
     timestamp: datetime
     filepath: str
+    tags: List[str]
 
 class ImageMetadataDAO:
     """
@@ -39,7 +41,7 @@ class ImageMetadataDAO:
         SessionLocal.configure(bind=self.engine)
         Base.metadata.create_all(bind=self.engine)
 
-    def add_image_metadata(self, title: str, description: str, filepath: str):
+    def add_image_metadata(self, title: str, description: str, filepath: str, tags: List[str]):
         """
         Adds image metadata to the database.
 
@@ -47,6 +49,7 @@ class ImageMetadataDAO:
             title (str): The title of the image.
             description (str): The description of the image.
             filepath (str): The filepath of the image.
+            tags (List[str]): The tags associated with the image.
 
         Returns:
             ImageMetadataModel: The newly created image metadata.
@@ -55,7 +58,8 @@ class ImageMetadataDAO:
             new_image_metadata = ImageMetadataModel(
                 title=title,
                 description=description,
-                filepath=filepath
+                filepath=filepath,
+                tags = ', '.join(tag for tag in tags) #added a list comprehension here for the purpose of the assignment, although in this case it swould be more streamlined to simply do ', '.join(tags)
             )
             session.add(new_image_metadata)
             session.commit()
@@ -71,7 +75,7 @@ class ImageMetadataDAO:
         with SessionLocal() as session:
             return session.query(ImageMetadataModel).all()
 
-    def update_image_metadata(self, id: int, title: str, description: str):
+    def update_image_metadata(self, id: int, title: str, description: str, tags: List[str]):
         """
         Updates image metadata in the database.
 
@@ -79,14 +83,18 @@ class ImageMetadataDAO:
             id (int): The ID of the image metadata to update.
             title (str): The new title of the image.
             description (str): The new description of the image.
+            tags (List[str]): The new tags associated with the image.
 
         Returns:
             ImageMetadataModel: The updated image metadata.
         """
+        print(", ".join(tags))
         with SessionLocal() as session:
             image_metadata = session.query(ImageMetadataModel).filter(ImageMetadataModel.id == id).one()
             image_metadata.title = title
             image_metadata.description = description
+            image_metadata.tags = ",".join(tags)  # Convert list of strings to a single string
+            print(image_metadata.tags, type(image_metadata.tags))
             session.commit()
             return image_metadata
 
