@@ -41,7 +41,7 @@ python dbinit.py
 
 ### Finally run the application, it should auto launch the browser to the UI
 ```
-streamlit run app.py
+streamlit run main.py
 ```
 
 ### Cleanup
