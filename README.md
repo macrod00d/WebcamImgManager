@@ -1,5 +1,5 @@
 # Webcam Image Manager
-### Developed by Mishca de Costa for ENGM4620 Project #1
+### Developed by Mishca de Costa for ENGM4620 Project #1 and 3
 
 This is a simple webcam image capture application which implements a web UI to capture an image from a user's local machine.
 Once the image has been captured, the user is prompted to input some metadata which then gets stored in an sqlite db
@@ -14,6 +14,13 @@ Once the image has been captured, the user is prompted to input some metadata wh
 * Edit page
     * Shows all saved images
     * Provides an edit feature to edit the title or description, or delete the image
+    * Allows user to select from 4 filters which apply image processing using the Python Image Library:
+       * Greyscale
+       * Sepia
+       * Sketch (edge detection and thresholding to make a sketch like image from the source)
+       * Invert (invert colours)
+    * Allows the user to reset the image modifications to the original
+    * AI Powered Image Describer - Uses GPT-4 Vision model to describe the image for the user
 
 ## How to Run 
 Ensure you have python 3.10 other versions are not tested. Conda is reccomended as python version can be easily specified
@@ -53,3 +60,5 @@ An img_cleanup.py script has been provided which will delete any images which do
 * Error handling is implemented to provide user details on why critical functions may have failed
 * Input validation is applied in case user attempts to perform an illegal operation such as not filling out all metadata fields
 * Streamlit is used for the UI to simplify interface development, future scope could include migration to Django/Flask
+* Image processing features
+* AI features
