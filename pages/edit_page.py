@@ -59,6 +59,13 @@ def display_edit_form(image_id):
                 maxtags = -1,
                 key=f"tags-{image_id}"
             )
+            selected_filter = st.selectbox(
+                "Filter",
+                options=["None", "Greyscale"],
+                index=0,  # Default to 'None'
+                key=f"filter-{image_id}"
+            )
+
             # Create columns for Submit and Delete buttons
             col1, col2 = st.columns(2)
             
@@ -70,6 +77,9 @@ def display_edit_form(image_id):
 
             # If the submit button is pressed, update the database and close the modal
             if submit_changes:
+                if selected_filter == "Greyscale":
+                    dao.apply_greyscale_effect(image_id)
+
                 dao.update_image_metadata(image_id, new_title, new_description, tags)
                 st.success("Changes saved successfully!")
                 edit_modal.close()

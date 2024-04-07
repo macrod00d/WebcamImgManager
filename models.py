@@ -3,6 +3,8 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 from pydantic import BaseModel
 from datetime import datetime
 from typing import List
+from PIL import Image
+
 Base = declarative_base()
 SessionLocal = sessionmaker()
 
@@ -122,3 +124,16 @@ class ImageMetadataDAO:
             image_metadata = session.query(ImageMetadataModel).filter(ImageMetadataModel.id == id).one()
             session.delete(image_metadata)
             session.commit()
+
+    def apply_greyscale_effect(self, id: int):
+        with SessionLocal() as session:
+            image_metadata = session.query(ImageMetadataModel).filter(ImageMetadataModel.id == id).one()
+
+            try:
+                img = Image.open(image_metadata.filepath)
+                img = img.convert("L")
+                img.save(image_metadata.filepath)
+            except Exception as e:
+                print(f"Error applying greyscale effect: {e}")
+                raise e
+
