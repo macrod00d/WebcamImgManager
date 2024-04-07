@@ -2,6 +2,8 @@ import streamlit as st
 from models import ImageMetadataDAO, ImageMetadataModel
 from streamlit_modal import Modal
 from streamlit_tags import st_tags
+from AI_utils import describe_image
+
 st.sidebar.page_link("pages/scan_page.py", label="Scan", icon="📸")
 st.sidebar.page_link("pages/edit_page.py", label="Edit", icon="📝")
 st.sidebar.page_link("pages/settings.py", label="Settings", icon="⚙️")
@@ -53,6 +55,10 @@ def display_edit_form(image_id):
             st.image(image_metadata.filepath, use_column_width=True)
             new_title = st.text_input("Title", value=image_metadata.title, key=f"title-{image_id}")
             new_description = st.text_area("Description", value=image_metadata.description or "", key=f"desc-{image_id}")
+            image_describe = st.button("Get AI Generated Description (WARNING - existing description will be overwritten)", key=f"add-desc-{image_id}")
+            loading_message = st.empty()
+
+
             tags = st_tags(
                 label='## Enter tags:',
                 text='You can type another tag, enter to save',
@@ -86,6 +92,15 @@ def display_edit_form(image_id):
             restore_image = col3.button("Restore Image", key=f"restore-{image_id}")
 
             # If the submit button is pressed, update the database and close the modal
+            if image_describe:
+                loading_message.text("Description Generation in Progress, this may take a while...")
+                new_description = describe_image(image_metadata.filepath)
+                print(new_description)
+                
+                dao.update_image_metadata(image_id, new_title, new_description, tags)
+                loading_message.empty()
+                st.experimental_rerun()
+
             if submit_changes:
                 if selected_filter == "Greyscale":
                     dao.apply_greyscale_effect(image_id)
