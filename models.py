@@ -3,7 +3,8 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 from pydantic import BaseModel
 from datetime import datetime
 from typing import List
-from PIL import Image
+from PIL import Image, ImageEnhance, ImageOps, ImageFilter
+import numpy as np
 
 Base = declarative_base()
 SessionLocal = sessionmaker()
@@ -136,4 +137,67 @@ class ImageMetadataDAO:
             except Exception as e:
                 print(f"Error applying greyscale effect: {e}")
                 raise e
+
+    def apply_sepia_effect(self, filepath):
+        try:
+            img = Image.open(filepath)
+            img.save(f"{filepath}-ORIGINAL.png")
+            img = img.convert("L")
+            sepia = np.array(img)
+            sepia = Image.fromarray(sepia)
+            sepia = ImageOps.colorize(sepia, (107, 74, 47), (207, 190, 183))
+            sepia.save(filepath)
+        except Exception as e:
+            print(f"Error applying sepia effect: {e}")
+            raise e
+
+    def apply_invert_effect(self, filepath):
+        try:
+            img = Image.open(filepath)
+            img.save(f"{filepath}-ORIGINAL.png")
+            img = ImageOps.invert(img)
+            img.save(filepath)
+        except Exception as e:
+            print(f"Error applying invert effect: {e}")
+            raise e
+
+    def apply_sketch_effect(self, filepath):
+        try:
+            img = Image.open(filepath)
+            img.save(f"{filepath}-ORIGINAL.png")
+            img = img.convert("L")  # Convert to grayscale
+            edges = img.filter(ImageFilter.FIND_EDGES)
+            sketch = ImageOps.invert(edges)
+            sketch.save(filepath)
+        except Exception as e:
+            print(f"Error applying sketch effect: {e}")
+            raise e
+
+    def adjust_brightness(self, filepath, factor):
+        try:
+            img = Image.open(filepath)
+            img.save(f"{filepath}-ORIGINAL.png")
+            enhancer = ImageEnhance.Brightness(img)
+            img = enhancer.enhance(factor)
+            img.save(filepath)
+        except Exception as e:
+            print(f"Error adjusting brightness: {e}")
+            raise e
+
+    def adjust_contrast(self, filepath, factor):
+        try:
+            img = Image.open(filepath)
+            img.save(f"{filepath}-ORIGINAL.png")
+            enhancer = ImageEnhance.Contrast(img)
+            img = enhancer.enhance(factor)
+            img.save(filepath)
+        except Exception as e:
+            print(f"Error adjusting contrast: {e}")
+            raise e
+
+    
+
+
+
+
 

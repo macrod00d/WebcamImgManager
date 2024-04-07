@@ -61,12 +61,18 @@ def display_edit_form(image_id):
                 maxtags = -1,
                 key=f"tags-{image_id}"
             )
+
             selected_filter = st.selectbox(
                 "Filter",
-                options=["None", "Greyscale"],
-                index=0,  # Default to 'None'
+                options=["None", "Greyscale", "Sepia", "Sketch", "Invert"],
+                index=0,
                 key=f"filter-{image_id}"
             )
+
+            brightness_factor = st.slider("Brightness", 0.5, 1.5, 1.0, 0.01, key=f"brightness-{image_id}")
+            contrast_factor = st.slider("Contrast", 0.5, 1.5, 1.0, 0.01, key=f"contrast-{image_id}")
+
+
 
             # Create columns for Submit and Delete buttons
             col1, col2 = st.columns(2)
@@ -81,6 +87,15 @@ def display_edit_form(image_id):
             if submit_changes:
                 if selected_filter == "Greyscale":
                     dao.apply_greyscale_effect(image_id)
+                elif selected_filter == "Sepia":
+                    dao.apply_sepia_effect(image_metadata.filepath)
+                elif selected_filter == "Sketch":
+                    dao.apply_sketch_effect(image_metadata.filepath)
+                elif selected_filter == "Invert":
+                    dao.apply_invert_effect(image_metadata.filepath)
+
+                dao.adjust_brightness(image_metadata.filepath, brightness_factor)
+                dao.adjust_contrast(image_metadata.filepath, contrast_factor)
 
                 dao.update_image_metadata(image_id, new_title, new_description, tags)
                 st.success("Changes saved successfully!")
