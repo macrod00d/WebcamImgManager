@@ -83,6 +83,7 @@ def main():
 
     st.sidebar.page_link("pages/scan_page.py", label="Scan", icon="📸")
     st.sidebar.page_link("pages/edit_page.py", label="Edit", icon="📝")
+    st.sidebar.page_link("pages/settings.py", label="Settings", icon="⚙️")
     
     if 'page' not in st.session_state:
         st.session_state['page'] = 'capture'

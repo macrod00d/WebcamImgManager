@@ -4,6 +4,8 @@ from streamlit_modal import Modal
 from streamlit_tags import st_tags
 st.sidebar.page_link("pages/scan_page.py", label="Scan", icon="📸")
 st.sidebar.page_link("pages/edit_page.py", label="Edit", icon="📝")
+st.sidebar.page_link("pages/settings.py", label="Settings", icon="⚙️")
+
 
 # Initialize the Data Access Object
 dao = ImageMetadataDAO()
