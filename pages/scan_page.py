@@ -26,6 +26,7 @@ def save_image(cv2_img, base_path='./img'):
     filename = f"img_{timestamp}.png"
     save_path = os.path.join(base_path, filename)
     cv2.imwrite(save_path, cv2_img)
+    cv2.imwrite(f"{save_path[:-4]}-ORIGINAL.png", cv2_img)
     return save_path
 
 def submit_details_cb():

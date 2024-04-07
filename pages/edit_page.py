@@ -75,13 +75,15 @@ def display_edit_form(image_id):
 
 
             # Create columns for Submit and Delete buttons
-            col1, col2 = st.columns(2)
+            col1, col2, col3 = st.columns(3)
             
             # Submit button for the form
             submit_changes = col1.button("Submit Changes", key=f"submit-{image_id}")
             
             # Delete button for the form
             delete_image = col2.button("Delete Image", key=f"delete-{image_id}")
+
+            restore_image = col3.button("Restore Image", key=f"restore-{image_id}")
 
             # If the submit button is pressed, update the database and close the modal
             if submit_changes:
@@ -106,6 +108,12 @@ def display_edit_form(image_id):
             if delete_image:
                 dao.delete_image_metadata(image_id)
                 st.success("Image deleted successfully!")
+                edit_modal.close()
+                st.experimental_rerun()
+
+            if restore_image:
+                dao.restore_original(image_metadata.filepath)
+                st.success("Image restored successfully!")
                 edit_modal.close()
                 st.experimental_rerun()
 

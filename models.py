@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import List
 from PIL import Image, ImageEnhance, ImageOps, ImageFilter
 import numpy as np
+import os
 
 Base = declarative_base()
 SessionLocal = sessionmaker()
@@ -141,7 +142,6 @@ class ImageMetadataDAO:
     def apply_sepia_effect(self, filepath):
         try:
             img = Image.open(filepath)
-            img.save(f"{filepath}-ORIGINAL.png")
             img = img.convert("L")
             sepia = np.array(img)
             sepia = Image.fromarray(sepia)
@@ -154,7 +154,6 @@ class ImageMetadataDAO:
     def apply_invert_effect(self, filepath):
         try:
             img = Image.open(filepath)
-            img.save(f"{filepath}-ORIGINAL.png")
             img = ImageOps.invert(img)
             img.save(filepath)
         except Exception as e:
@@ -164,7 +163,6 @@ class ImageMetadataDAO:
     def apply_sketch_effect(self, filepath):
         try:
             img = Image.open(filepath)
-            img.save(f"{filepath}-ORIGINAL.png")
             img = img.convert("L")  # Convert to grayscale
             edges = img.filter(ImageFilter.FIND_EDGES)
             sketch = ImageOps.invert(edges)
@@ -176,7 +174,6 @@ class ImageMetadataDAO:
     def adjust_brightness(self, filepath, factor):
         try:
             img = Image.open(filepath)
-            img.save(f"{filepath}-ORIGINAL.png")
             enhancer = ImageEnhance.Brightness(img)
             img = enhancer.enhance(factor)
             img.save(filepath)
@@ -187,12 +184,21 @@ class ImageMetadataDAO:
     def adjust_contrast(self, filepath, factor):
         try:
             img = Image.open(filepath)
-            img.save(f"{filepath}-ORIGINAL.png")
             enhancer = ImageEnhance.Contrast(img)
             img = enhancer.enhance(factor)
             img.save(filepath)
         except Exception as e:
             print(f"Error adjusting contrast: {e}")
+            raise e
+
+    def restore_original(self, filepath):
+        try:
+            original_path = f"{filepath[:-4]}-ORIGINAL.png"
+            if os.path.exists(original_path):
+                img = Image.open(original_path)
+                img.save(filepath)
+        except Exception as e:
+            print(f"Error restoring original image: {e}")
             raise e
 
     
